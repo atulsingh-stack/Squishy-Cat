@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://dvfnxadl05q01"]
+
+[ext_resource type="Script" uid="uid://b3cmsaax7qgv8" path="res://scripts/obstacle.gd" id="1_7ukg5"]
+[ext_resource type="Texture2D" uid="uid://c74ntfsfujnaw" path="res://art/obstacles/orb.png" id="2_drdry"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3xr6u"]
+radius = 64.0
+
+[node name="Obstacle" type="Area2D"]
+script = ExtResource("1_7ukg5")
+
+[node name="ObstacleSprite" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_drdry")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(1, 0.17254902, 1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_3xr6u")

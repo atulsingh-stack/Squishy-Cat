@@ -1,0 +1,128 @@
+[gd_scene load_steps=12 format=3 uid="uid://doitgwhr1siem"]
+
+[ext_resource type="Script" uid="uid://bpwenjekr4rno" path="res://scripts/main.gd" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://bblx73kxaovw6" path="res://scripts/cat.gd" id="2_0xm2m"]
+[ext_resource type="Texture2D" uid="uid://boiry3x63gfm2" path="res://art/backgrounds/sky_hd.png" id="2_1bvp3"]
+[ext_resource type="Texture2D" uid="uid://kk4grt48cbx3" path="res://art/cat/cat_squishy.png" id="3_h2yge"]
+[ext_resource type="Texture2D" uid="uid://c74ntfsfujnaw" path="res://art/obstacles/orb.png" id="5_lquwl"]
+[ext_resource type="FontFile" uid="uid://bfqfbk7c8t8u4" path="res://assets/fonts/Clash_Regular.otf" id="6_7mycd"]
+[ext_resource type="Texture2D" uid="uid://de0lhfrpaagmk" path="res://assets/ui/start_button_bg.png" id="7_272bh"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0xm2m"]
+radius = 40.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5vw27"]
+content_margin_bottom = 15.0
+texture = ExtResource("7_272bh")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_kek77"]
+texture = ExtResource("7_272bh")
+modulate_color = Color(0.39768183, 0.085565545, 0.16660881, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_272bh"]
+texture = ExtResource("7_272bh")
+
+[node name="Main" type="Node2D"]
+position = Vector2(1, -1)
+script = ExtResource("1_ig7tw")
+metadata/_edit_vertical_guides_ = [720.0]
+
+[node name="Background" type="Sprite2D" parent="."]
+z_index = -10
+position = Vector2(720, 1281)
+texture = ExtResource("2_1bvp3")
+
+[node name="Cat" type="Area2D" parent="."]
+script = ExtResource("2_0xm2m")
+
+[node name="CatSprite" type="Sprite2D" parent="Cat"]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_h2yge")
+
+[node name="CatShadow" type="Sprite2D" parent="Cat"]
+modulate = Color(0, 0, 0, 0.5686275)
+z_index = -1
+position = Vector2(0, 45)
+scale = Vector2(0.38, 0.18)
+texture = ExtResource("5_lquwl")
+
+[node name="CatShape" type="ColorRect" parent="Cat"]
+visible = false
+offset_left = -25.0
+offset_top = -25.0
+offset_right = 25.0
+offset_bottom = 25.0
+color = Color(0.50189406, 0.962969, 0.07003113, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Cat"]
+shape = SubResource("CircleShape2D_0xm2m")
+
+[node name="Obstacles" type="Node2D" parent="."]
+
+[node name="ObstacleTimer" type="Timer" parent="."]
+wait_time = 1.5
+autostart = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(720, 1280)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ScoreLabel" type="Label" parent="UI"]
+offset_left = 94.0
+offset_top = 62.0
+offset_right = 453.0
+offset_bottom = 122.0
+theme_override_colors/font_color = Color(0.42745098, 0.13725491, 0.19607843, 1)
+theme_override_fonts/font = ExtResource("6_7mycd")
+theme_override_font_sizes/font_size = 60
+text = "Score: 0.0"
+metadata/_edit_use_anchors_ = true
+
+[node name="BestLabel" type="Label" parent="UI"]
+offset_left = 921.0
+offset_top = 59.0
+offset_right = 1389.0
+offset_bottom = 119.0
+theme_override_colors/font_color = Color(0.42745098, 0.13725491, 0.19607843, 1)
+theme_override_fonts/font = ExtResource("6_7mycd")
+theme_override_font_sizes/font_size = 60
+text = "Hi-Score 0.00"
+metadata/_edit_use_anchors_ = true
+
+[node name="GameOverLabel" type="Label" parent="UI"]
+offset_left = 346.0
+offset_top = 462.0
+offset_right = 1093.0
+offset_bottom = 582.0
+theme_override_colors/font_color = Color(0.42745098, 0.13725491, 0.19607843, 1)
+theme_override_fonts/font = ExtResource("6_7mycd")
+theme_override_font_sizes/font_size = 120
+text = "Game Over"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="StartButton" type="Button" parent="UI"]
+anchors_preset = -1
+anchor_left = 0.3875
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5410156
+offset_left = -213.0
+offset_top = 818.0
+offset_right = 376.0
+offset_bottom = 918.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("6_7mycd")
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxTexture_5vw27")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_kek77")
+theme_override_styles/hover = SubResource("StyleBoxTexture_272bh")
+text = "START GAME"
+metadata/_edit_use_anchors_ = true
+
+[connection signal="area_entered" from="Cat" to="." method="_on_Cat_area_entered"]
+[connection signal="timeout" from="ObstacleTimer" to="." method="_on_ObstacleTimer_timeout"]
+[connection signal="pressed" from="UI/StartButton" to="." method="_on_StartButton_pressed"]
