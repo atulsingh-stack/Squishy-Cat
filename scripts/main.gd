@@ -16,7 +16,7 @@ var difficulty: float = 1.0
 
 const BEST_TIME_SAVE_PATH := "user://best_time.save"
 
-# Make sure the file name is lowercase to match your actual file: scenes/obstacle.tscn
+# Make sure this matches your actual file name (lowercase 'obstacle.tscn').
 var ObstacleScene: PackedScene = preload("res://scenes/obstacle.tscn")
 
 var shake_time: float = 0.0
@@ -89,6 +89,28 @@ func _trigger_screen_shake(time: float, strength: float) -> void:
 	shake_strength = strength
 
 
+# Helper: convert finger/mouse position into a cat target that sits ABOVE the finger,
+# so the cat doesn't hide under the thumb.
+func _set_target_from_input(input_pos: Vector2) -> void:
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	if viewport_size == Vector2.ZERO:
+		viewport_size = get_viewport_rect().size
+
+	# How far above the finger the cat should aim, as a fraction of screen height.
+	var offset_y: float = viewport_size.y * 0.18  # ~18% of screen height above finger
+	var desired: Vector2 = input_pos - Vector2(0.0, offset_y)
+
+	# Clamp inside a comfortable band so cat doesn't go offscreen.
+	var min_y: float = viewport_size.y * 0.10
+	var max_y: float = viewport_size.y * 0.95
+	desired.y = clamp(desired.y, min_y, max_y)
+
+	# Optionally clamp X a bit if you want margins (for now, full width is fine)
+	desired.x = clamp(desired.x, 0.0, viewport_size.x)
+
+	target_position = desired
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	# Only handle drag input when RUNNING.
 	if state != GameState.RUNNING:
@@ -98,22 +120,23 @@ func _unhandled_input(event: InputEvent) -> void:
 		var t: InputEventScreenTouch = event
 		if t.pressed:
 			is_dragging = true
-			target_position = t.position
+			_set_target_from_input(t.position)
 		else:
 			is_dragging = false
 
 	elif event is InputEventScreenDrag:
 		is_dragging = true
-		target_position = event.position
+		_set_target_from_input(event.position)
 
 	elif event is InputEventMouseButton:
 		var mb: InputEventMouseButton = event
 		if mb.button_index == MOUSE_BUTTON_LEFT:
 			is_dragging = mb.pressed
-			target_position = mb.position
+			if mb.pressed:
+				_set_target_from_input(mb.position)
 
 	elif event is InputEventMouseMotion and is_dragging:
-		target_position = event.position
+		_set_target_from_input(event.position)
 
 
 func _update_score_labels() -> void:
